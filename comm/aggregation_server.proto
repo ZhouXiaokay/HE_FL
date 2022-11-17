@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+
+// client send it to requestServer
+message local_params{
+    int32 client_rank = 1;
+    int32 sample_num = 2;
+    bytes params_msg = 3;
+}
+
+message avg_params{
+    int32 client_rank = 1;
+    bytes params_msg = 2;
+}
+
+
+service AggregationServerService {
+  rpc fed_avg(local_params) returns (avg_params);
+
+}
