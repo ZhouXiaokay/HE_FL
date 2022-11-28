@@ -5,11 +5,13 @@ import sys
 sys.path.append("../../../")
 from comm.client import Client
 from conf.args import args_parser
+from torch.utils.data import DataLoader
+from dataset import DatasetSplit
 
 
 class BaseTrainer(object):
 
-    def __init__(self, args, train_set, test_set):
+    def __init__(self, args, data_set, idxs):
         self.args = args
 
         # initialize settings
@@ -18,11 +20,11 @@ class BaseTrainer(object):
         self.num_class = self.args.num_class
         self.epoch = self.args.epoch
         self.batch_size = self.args.batch_size
-        self.train_set = train_set
-        self.test_set = test_set
-
         self.shuffle_dataset = True
-
+        self.train_loader = DataLoader(DatasetSplit(data_set, idxs), batch_size=self.batch_size,
+                                       shuffle=self.shuffle_dataset,
+                                       num_workers=0)
+        self.test_loader = None
         self.model = None
         self.optimizer = None
         self.criterion = None
@@ -68,7 +70,7 @@ class BaseTrainer(object):
     def local_train(self):
         raise NotImplementedError
 
-    def test(self):
+    def test(self,test_loader):
         raise NotImplementedError
 
     def launch(self):

@@ -4,15 +4,17 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
-train_set = torchvision.datasets.MNIST(root='data', train=True, transform=torchvision.transforms.ToTensor(),
-                                       download=False)
-test_set = torchvision.datasets.MNIST(root='data', train=False, transform=torchvision.transforms.ToTensor(),
-                                      download=False)
+trans_mnist = torchvision.transforms.Compose(
+    [torchvision.transforms.ToTensor(), torchvision.transforms.Normalize((0.1307,), (0.3081,))])
+train_set = torchvision.datasets.MNIST(root='data', train=True, transform=trans_mnist,
+                                       download=True)
+test_set = torchvision.datasets.MNIST(root='data', train=False, transform=trans_mnist,
+                                      download=True)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print(device)
+
 train_loader = Data.DataLoader(train_set, batch_size=512, shuffle=True, num_workers=16)
 test_loader = Data.DataLoader(train_set, batch_size=512, shuffle=True, num_workers=16)
-print(train_set)
+
 input_size = 28 * 28
 num_classes = 10
 lr = 0.01

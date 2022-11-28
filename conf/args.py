@@ -12,7 +12,7 @@ def args_parser():
                         type=int,
                         help='the client id')
     parser.add_argument('--rounds',
-                        default=100,
+                        default=50,
                         type=int,
                         help='total communication rounds')
     parser.add_argument('--epoch',
