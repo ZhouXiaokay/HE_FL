@@ -19,13 +19,13 @@ def run(arg):
     test_loader = DataLoader(test_set, batch_size=arg.batch_size,
                              shuffle=True,
                              num_workers=0)
-    lr_trainer = MLPTrainer(arg, train_set, dict_users[arg.id])
+    mlp_trainer = MLPTrainer(arg, train_set, dict_users[arg.id])
 
     for rnd in range(args.rounds):
         print("round: ", rnd)
 
-        lr_trainer.local_train()
-        lr_trainer.test(test_loader)
+        mlp_trainer.local_train()
+        mlp_trainer.test(test_loader)
 
 if __name__ == '__main__':
     args = args_parser()
