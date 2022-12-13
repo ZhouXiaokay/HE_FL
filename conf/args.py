@@ -53,7 +53,7 @@ def args_parser():
                         help='the ctx file location')
     parser.add_argument('--num_channels',
                         type=int,
-                        default=3,
+                        default=1,
                         help="number of channels of imges")
     args = parser.parse_args()
     return args
