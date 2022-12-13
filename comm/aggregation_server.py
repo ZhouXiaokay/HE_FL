@@ -38,7 +38,8 @@ class AggregationServer(aggregate_server_pb2_grpc.AggregationServerServiceServic
             for p in group['params']:
                 with torch.no_grad():
                     param_list.append(p)
-        param_flat_tensor = flatten_tensors(param_list).detach()
+        param_flat_tensor = flatten_tensors(param_list).cpu().detach()
+        print(param_flat_tensor)
         plain_params_tensor = ts.plain_tensor(param_flat_tensor)
         enc_param_vector = ts.ckks_vector(self.pk_ctx, plain_params_tensor)
         return enc_param_vector

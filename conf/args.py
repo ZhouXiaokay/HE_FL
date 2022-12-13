@@ -43,7 +43,7 @@ def args_parser():
                         default=784,
                         type=int,
                         help='the number of features')
-    parser.add_argument('--num_class',
+    parser.add_argument('--num_classes',
                         default=10,
                         type=int,
                         help='the number of class')
@@ -51,5 +51,9 @@ def args_parser():
                         default='../h_e/ts_ckks.config',
                         type=str,
                         help='the ctx file location')
+    parser.add_argument('--num_channels',
+                        type=int,
+                        default=3,
+                        help="number of channels of imges")
     args = parser.parse_args()
     return args

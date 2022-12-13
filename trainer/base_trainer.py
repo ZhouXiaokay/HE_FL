@@ -17,7 +17,7 @@ class BaseTrainer(object):
         # initialize settings
         self.sample_num = args.sample_num
         self.input_size = self.args.input_size
-        self.num_class = self.args.num_class
+        self.num_class = self.args.num_classes
         self.epoch = self.args.epoch
         self.batch_size = self.args.batch_size
         self.shuffle_dataset = True
