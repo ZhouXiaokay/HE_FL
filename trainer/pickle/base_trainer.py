@@ -2,7 +2,7 @@ from comm.utils import flatten_tensors, unflatten_tensors
 import torch.nn
 import sys
 
-sys.path.append("../../../")
+sys.path.append("../../../../../")
 from comm.client import Client
 from conf.args import args_parser
 from torch.utils.data import DataLoader
@@ -35,14 +35,14 @@ class BaseTrainer(object):
                         ('grpc.max_receive_message_length', self.max_msg_size)]
 
         self.server_address = args.server_address
-        self.client = Client(self.server_address, args.id, self.sample_num, args.ctx_file)
+        self.client = Client(self.server_address, args.id, self.sample_num)
 
     # send model params to server, and get the sum params
     def transmit(self, params_list):
         flat_tensor = flatten_tensors(params_list).detach()
         # get the average params from server
-        received_list = self.client.transmit(flat_tensor)
-        received_tensors = torch.tensor(received_list, dtype=flat_tensor.dtype, device=flat_tensor.device)
+        received_tensors = self.client.transmit(flat_tensor)
+        # received_tensors = torch.tensor(received_list, dtype=flat_tensor.dtype, device=flat_tensor.device)
 
         return received_tensors
 
@@ -52,7 +52,7 @@ class BaseTrainer(object):
         for group in self.optimizer.param_groups:
             for p in group['params']:
                 with torch.no_grad():
-                    p.mul_(self.sample_num)
+                    # p.mul_(self.sample_num)
                     param_list.append(p)
 
         return param_list
@@ -65,6 +65,11 @@ class BaseTrainer(object):
         for f, t in zip(unflatten_tensors(average_params, params_list), params_list):
             with torch.no_grad():
                 t.set_(f)
+
+    def reweight_params(self):
+        params_dict = self.model.state_dict()
+        self.client.reweight(params_dict)
+
 
     # one communication round
     def local_train(self):

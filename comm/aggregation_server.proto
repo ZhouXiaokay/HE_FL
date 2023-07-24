@@ -16,5 +16,6 @@ message avg_params{
 
 service AggregationServerService {
   rpc fed_avg(local_params) returns (avg_params);
+  rpc fed_shapley(local_params) returns (avg_params);
 
 }

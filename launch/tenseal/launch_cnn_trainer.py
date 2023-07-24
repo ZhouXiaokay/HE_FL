@@ -1,9 +1,7 @@
 import torchvision
 from conf.args import args_parser
-from trainer.mlp_trainer import MLPTrainer
-import torch
+from trainer.tenseal.cnn_trainer import CNNTrainer
 import pickle
-from dataset import DatasetSplit
 from torch.utils.data import DataLoader
 
 
@@ -17,15 +15,14 @@ def run(arg):
     test_set = torchvision.datasets.MNIST(root='../data', train=False, transform=trans_mnist,
                                           download=True)
     test_loader = DataLoader(test_set, batch_size=arg.batch_size,
-                             shuffle=True,
-                             num_workers=0)
-    mlp_trainer = MLPTrainer(arg, train_set, dict_users[arg.id])
+                             shuffle=True)
+    cnn_trainer = CNNTrainer(arg, train_set, dict_users[arg.id])
 
     for rnd in range(args.rounds):
         print("round: ", rnd)
 
-        mlp_trainer.local_train()
-        mlp_trainer.test(test_loader)
+        cnn_trainer.local_train()
+        # cnn_trainer.test(test_loader)
 
 if __name__ == '__main__':
     args = args_parser()

@@ -36,7 +36,7 @@ def args_parser():
                         type=str,
                         help='init method')
     parser.add_argument('--sample_num',
-                        default=3,
+                        default=1,
                         type=int,
                         help='local_count/sum_count')
     parser.add_argument('--input_size',

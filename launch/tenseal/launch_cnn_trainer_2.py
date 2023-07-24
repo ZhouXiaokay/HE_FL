@@ -1,7 +1,6 @@
 import torchvision
 from conf.args import args_parser
-from trainer.logistic_trainer import LogisticTrainer
-import torch
+from trainer.tenseal.cnn_trainer import CNNTrainer
 import pickle
 from torch.utils.data import DataLoader
 
@@ -15,21 +14,18 @@ def run(arg):
                                            download=True)
     test_set = torchvision.datasets.MNIST(root='../data', train=False, transform=trans_mnist,
                                           download=True)
-
     test_loader = DataLoader(test_set, batch_size=arg.batch_size,
                              shuffle=True,
                              num_workers=0)
-    lr_trainer = LogisticTrainer(arg, train_set, dict_users[arg.id])
+    cnn_trainer = CNNTrainer(arg, train_set, dict_users[arg.id])
 
     for rnd in range(args.rounds):
         print("round: ", rnd)
 
-        lr_trainer.local_train()
-        # lr_trainer.test(test_loader)
-
-
+        cnn_trainer.local_train()
+        cnn_trainer.test(test_loader)
 
 if __name__ == '__main__':
     args = args_parser()
-    args.id = 1
+    args.id =1
     run(args)

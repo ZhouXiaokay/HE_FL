@@ -66,13 +66,13 @@ if __name__ == '__main__':
                                        transforms.ToTensor(),
                                        transforms.Normalize((0.1307,), (0.3081,))
                                    ]))
-    num = 2
+    num = 100
     d = mnist_iid(dataset_train, num)
-    # with open("../data/sampling.pkl", "wb") as tf:
-    #     pickle.dump(d, tf)
+    with open("../data/sampling.pkl", "wb") as tf:
+        pickle.dump(d, tf)
 
     with open("../data/sampling.pkl", "rb") as tf:
         d_1 = pickle.load(tf)
-    # #
-    # print(d[0])
+    #
+    print(d[0])
     print(len(d_1[0]))

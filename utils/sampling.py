@@ -66,3 +66,4 @@ if __name__ == '__main__':
                                    ]))
     num = 2
     d = mnist_iid(dataset_train, num)
+

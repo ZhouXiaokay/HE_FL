@@ -1,9 +1,7 @@
 import torchvision
 from conf.args import args_parser
-from trainer.mlp_trainer import MLPTrainer
-import torch
+from trainer.tenseal.mlp_trainer import MLPTrainer
 import pickle
-from dataset import DatasetSplit
 from torch.utils.data import DataLoader
 
 
@@ -29,5 +27,5 @@ def run(arg):
 
 if __name__ == '__main__':
     args = args_parser()
-    args.id = 1
+
     run(args)

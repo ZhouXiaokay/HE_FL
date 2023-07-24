@@ -1,9 +1,7 @@
 import torchvision
 from conf.args import args_parser
-from trainer.cnn_trainer import CNNTrainer
-import torch
+from trainer.tenseal.logistic_trainer import LogisticTrainer
 import pickle
-from dataset import DatasetSplit
 from torch.utils.data import DataLoader
 
 
@@ -19,15 +17,15 @@ def run(arg):
     test_loader = DataLoader(test_set, batch_size=arg.batch_size,
                              shuffle=True,
                              num_workers=0)
-    cnn_trainer = CNNTrainer(arg, train_set, dict_users[arg.id])
+    lr_trainer = LogisticTrainer(arg, train_set, dict_users[arg.id])
 
     for rnd in range(args.rounds):
         print("round: ", rnd)
 
-        cnn_trainer.local_train()
-        # lr_trainer.test(test_loader)
+        lr_trainer.local_train()
+        lr_trainer.test(test_loader)
 
 if __name__ == '__main__':
     args = args_parser()
-    args.id =1
+
     run(args)

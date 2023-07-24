@@ -3,18 +3,20 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import grpc
-import pickle
+import tenseal as ts
 
 from comm import aggregation_server_pb2
 from comm import aggregation_server_pb2_grpc
 
 
-class Client:
+class TensealClient:
 
-    def __init__(self, server_address, client_rank, sample_num):
+    def __init__(self, server_address, client_rank, sample_num, ctx_file):
         self.server_address = server_address
         self.client_rank = client_rank
         self.sample_num = sample_num
+        context_bytes = open(ctx_file, "rb").read()
+        self.ctx = ts.context_from(context_bytes)
 
         self.max_msg_size = 1000000000
         self.options = [('grpc.max_send_message_length', self.max_msg_size),
@@ -22,45 +24,29 @@ class Client:
         channel = grpc.insecure_channel(self.server_address, options=self.options)
         self.stub = aggregation_server_pb2_grpc.AggregationServerServiceStub(channel)
 
-    def __sum(self, plain_vector):
-        # params_dict = params_dict.detach().cpu()
-        vector_msg = pickle.dumps(plain_vector)
+    def __sum_encrypted(self, plain_vector):
+        plain_vector = plain_vector.detach().cpu()
+        enc_vector = ts.ckks_vector(self.ctx, plain_vector)
 
         request = aggregation_server_pb2.local_params(
             client_rank=self.client_rank,
             sample_num=self.sample_num,
-            params_msg=vector_msg
+            params_msg=enc_vector.serialize()
         )
         # comm with server
         response = self.stub.fed_avg(request)
 
         # deserialize summed vector from response
         assert self.client_rank == response.client_rank
-        summed_vector = pickle.loads(response.params_msg)
-        # summed_plain_vector = summed_vector
+        summed_encrypted_vector = ts.ckks_vector_from(self.ctx, response.params_msg)
 
-        return summed_vector
+        # decrypt vector
+        summed_plain_vector = summed_encrypted_vector.decrypt()
 
-    def reweight(self, params_dict):
-        vector_msg = pickle.dumps(params_dict)
-
-        request = aggregation_server_pb2.local_params(
-            client_rank=self.client_rank,
-            sample_num=self.sample_num,
-            params_msg=vector_msg
-        )
-        # comm with server
-        response = self.stub.fed_shapley(request)
-
-        # deserialize summed vector from response
-        assert self.client_rank == response.client_rank
-        reweight_vector = pickle.loads(response.params_msg)
-
-
-        return reweight_vector
+        return summed_plain_vector
 
     def transmit(self, params_list):
-        received = self.__sum(params_list)
+        received = self.__sum_encrypted(params_list)
 
         return received
 

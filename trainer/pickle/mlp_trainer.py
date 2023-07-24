@@ -1,14 +1,13 @@
-from model import LogisticModel
-from trainer.base_trainer import BaseTrainer
+from model import MLPModel
+from trainer.pickle.base_trainer import BaseTrainer
 import torch.optim as optim
-from torch.utils.data import DataLoader
 import torch
 
 
-class LogisticTrainer(BaseTrainer):
+class MLPTrainer(BaseTrainer):
     def __init__(self, args, train_set, test_set):
         super().__init__(args, train_set, test_set)
-        self.model = LogisticModel(self.input_size, self.num_classes).cuda()
+        self.model = MLPModel(self.input_size, 200, self.num_class).cuda()
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr)
         self.criterion = torch.nn.CrossEntropyLoss()
 
@@ -23,9 +22,9 @@ class LogisticTrainer(BaseTrainer):
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
-        print("before ", self.model.linear.bias)
-        self.average_params()
-        print("after ", self.model.linear.bias)
+        # self.average_params()
+        self.reweight_params()
+
 
     def test(self, test_loader):
         self.test_loader = test_loader

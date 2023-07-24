@@ -1,14 +1,12 @@
 import torchvision
 from conf.args import args_parser
-from trainer.logistic_trainer import LogisticTrainer
-import torch
+from trainer.pickle.mlp_trainer import MLPTrainer
 import pickle
-from dataset import DatasetSplit
 from torch.utils.data import DataLoader
 
 
 def run(arg):
-    with open("../data/sampling.pkl", "rb") as tf:
+    with open("../../data/sampling.pkl", "rb") as tf:
         dict_users = pickle.load(tf)
     trans_mnist = torchvision.transforms.Compose(
         [torchvision.transforms.ToTensor(), torchvision.transforms.Normalize((0.1307,), (0.3081,))])
@@ -19,13 +17,13 @@ def run(arg):
     test_loader = DataLoader(test_set, batch_size=arg.batch_size,
                              shuffle=True,
                              num_workers=0)
-    lr_trainer = LogisticTrainer(arg, train_set, dict_users[arg.id])
+    mlp_trainer = MLPTrainer(arg, train_set, dict_users[arg.id])
 
     for rnd in range(args.rounds):
         print("round: ", rnd)
 
-        lr_trainer.local_train()
-        lr_trainer.test(test_loader)
+        mlp_trainer.local_train()
+        mlp_trainer.test(test_loader)
 
 if __name__ == '__main__':
     args = args_parser()
